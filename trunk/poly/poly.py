@@ -1,3 +1,18 @@
+"""
+Polygon partitioning and other utilities.
+
+It's simple, it's in pure python and it just works, although the algorithm is
+not the fastest (but for polygons with 5 or 10 vertices it doesn't matter
+anyway).
+
+Usage:
+
+>>> import poly 
+>>> poly.triangulate([(0,0), (1,0), (0,1), (0.5, 0.25)])
+[[(1, 0), (0, 1), (0.5, 0.25)], [(0, 0), (1, 0), (0.5, 0.25)]]
+
+"""
+
 def isright(a,b,c):
     "is c on the right, or on the left of the arrow a-->b?"
     return (b[0]-a[0])*(c[1]-a[1])<(b[1]-a[1])*(c[0]-a[0])
