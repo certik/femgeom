@@ -1,0 +1,9 @@
+femgeom
+=======
+
+Ondrej Certik <ondrej@certik.cz>
+
+Geometry utilities for FEM modeling
+
+Currently can convert a geometry from gmsh format to comsol (former femlab)
+format. Also contains reusable 2d polygon partitioning submodule.
