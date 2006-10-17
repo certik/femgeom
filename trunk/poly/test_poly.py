@@ -1,18 +1,4 @@
-"""
-Polygon partitioning and other utilities.
-
-It's simple, it's in pure python and it just works, although the algorithm is
-not the fastest (but for polygons with 5 or 10 vertices it doesn't matter
-anyway).
-
-Usage:
-
->>> import poly 
->>> poly.triangulate([(0,0), (1,0), (0,1), (0.5, 0.25)])
-[[(1, 0), (0, 1), (0.5, 0.25)], [(0, 0), (1, 0), (0.5, 0.25)]]
-
-"""
-from poly import triangulate, isright, convex, isinpolygon, overlapping
+from poly import isright, convex, isinpolygon, overlapping, triangulate
 
 def test3():
     assert triangulate([(0,0), (1,0), (0,1)]) == [[(0,0), (1,0), (0,1)]]
