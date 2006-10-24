@@ -59,4 +59,4 @@ Volume (24) = {1000024};
 Physical Volume (100) = {23, 24};
     """);
     g=geom.read_gmsh("/tmp/t2.geo")
-    geom.write_femlab(g,"/tmp/t2.m")
+    geom.write_femlab(g,"/tmp/t2.m",export3D=True)
