@@ -4,6 +4,7 @@ class geometry(object):
         self.d1={}
         self.d2={}
         self.d3={}
+        self.phys3={}
     def add0(self,o):
         o.geom=self
         self.d0[o.getn()]=o
@@ -16,6 +17,8 @@ class geometry(object):
     def add3(self,o):
         o.geom=self
         self.d3[o.getn()]=o
+    def addphys3(self,o):
+        self.phys3[o.getn()]=o
 
 class geomobject(object):
     def getn(self):
@@ -104,3 +107,14 @@ class volume(geomobject):
         self.boundary=boundary
     def getsurfaces(self):
         return self.geom.d2[self.boundary].getsurfaces()
+
+class physvolume(geomobject):
+    def __init__(self,n,volumes):
+        self.data=(n,volumes)
+        self.volumes=volumes
+    def getvolumes(self):
+        s=[]
+        for x in self.volumes:
+            if x>0: s.append(self.geom.d3[x])
+            else: raise "negative volume ID"
+        return s

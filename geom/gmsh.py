@@ -105,7 +105,7 @@ def read_gmsh(filename):
             assert len(x[2])==1
             g.add3(geom.volume(int(x[1]),int(x[2][0])))
         elif x[0]=="Physical Volume":
-            pass
+            g.addphys3(geom.physvolume(int(x[1]),[int(y) for y in x[2]]))
         else:
             raise "Unsupported entity: "+x[0]
     return g
