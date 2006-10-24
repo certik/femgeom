@@ -7,3 +7,10 @@ Geometry utilities for FEM modeling
 
 Currently can convert a geometry from the gmsh format to the comsol (former
 femlab) format. Also contains reusable a 2d polygon partitioning submodule.
+
+Usage
+-----
+
+Prerequisites:
+
+apt-get install python-pyparsing

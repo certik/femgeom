@@ -187,7 +187,8 @@ def femlabsurface(f,n,points):
     return s
 
 
-def write_femlab(g,filename):
+def write_femlab(g,filename, export0D=False, export1D=False, export2D=False,
+    export3D=True):
     head="""\
 flclear fem
 
@@ -261,10 +262,6 @@ fem=multiphysics(fem);
 """
     s=""
     objs=[]
-    export0D=False
-    export1D=False
-    export2D=False
-    export3D=True
     if export0D:
         for x in g.d0.values():
             assert isinstance(x,geom.point)

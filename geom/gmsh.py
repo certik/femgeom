@@ -56,11 +56,15 @@ def read_gmsh(filename):
             Keyword("Volume")+lpar+inum+rpar+eq+
             Group(lbrace+inum+rbrace)+semi
             )
+    physicalvolume = Group(
+            Keyword("Physical Volume")+lpar+inum+rpar+eq+
+            Group(lbrace+inum+OneOrMore(colon+inum)+rbrace)+semi
+            )
 
     comment = Group( Literal("//")+restOfLine).suppress()
 
     command = point | line | lineloop | circle | planesurface | ruledsurface | \
-            surfaceloop | volume | comment
+            surfaceloop | volume | physicalvolume | comment
 
     grammar= OneOrMore(command)+StringEnd()
 
@@ -100,6 +104,8 @@ def read_gmsh(filename):
         elif x[0]=="Volume":
             assert len(x[2])==1
             g.add3(geom.volume(int(x[1]),int(x[2][0])))
+        elif x[0]=="Physical Volume":
+            pass
         else:
             raise "Unsupported entity: "+x[0]
     return g
