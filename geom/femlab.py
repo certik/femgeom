@@ -188,7 +188,9 @@ def femlabsurface(f,n,points):
 
 
 def write_femlab(g,filename, export0D=False, export1D=False, export2D=False,
-    export3D=True):
+    export3D=False):
+    if not export1D and not export2D and not export3D and not export3D:
+        export3D=True
     head="""\
 flclear fem
 
