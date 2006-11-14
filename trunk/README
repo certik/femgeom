@@ -3,10 +3,28 @@ femgeom
 
 Ondrej Certik <ondrej@certik.cz>
 
-Geometry utilities for FEM modeling
+Geometry utilities for FEM modeling.
 
-Currently can convert a geometry from the gmsh format to the comsol (former
-femlab) format. Also contains reusable a 2d polygon partitioning submodule.
+geometry import:
+    - gmsh
+
+geometry export:
+    - comsol (former femlab)
+    - tetgen
+
+mesh import:
+    - tetgen
+
+mesh export:
+    - libmesh
+
+other:
+    - reusable a 2d polygon partitioning submodule
+
+Testing
+-------
+
+py.test
 
 Usage
 -----
@@ -14,3 +32,7 @@ Usage
 Prerequisites:
 
 apt-get install python-pyparsing
+
+
+Create a geometry in gmsh, convert to tetgen, run tetgen, convert mesh to
+libmesh, assembly & solve.
