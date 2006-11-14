@@ -1,5 +1,6 @@
 import math
 
+import meshutils
 import geometry as geom
 
 def conv(x):
@@ -40,3 +41,37 @@ def write_tetgen(g,filename):
     #regions
     s+="\n0\n"
     open(filename,"w").write(s)
+
+def read_tetgen(m,fname):
+    def getnodes(fnods):
+        f=file(fnods)
+        l=[int(x) for x in f.readline().split()]
+        npoints,dim,nattrib,nbound=l
+        assert dim==3
+        nodes=[]
+        for line in f:
+            if line[0]=="#": continue
+            l=[float(x) for x in line.split()]
+            l[0]=int(l[0])
+            nodes.append(tuple(l))
+            assert l[0]==len(nodes)
+        assert npoints==len(nodes)
+        return nodes
+    def getele(fele):
+        f=file(fele)
+        l=[int(x) for x in f.readline().split()]
+        ntetra,nnod,nattrib=l
+        assert nnod==4
+        els=[]
+        for line in f:
+            if line[0]=="#": continue
+            l=[float(x) for x in line.split()]
+            l[0]=int(l[0])
+            els.append((l[0],54,l[1],l[2],l[3],l[4]))
+            assert l[0]==len(els)
+        return els
+    m.nodes=getnodes(fname+".node")
+    m.elements=getele(fname+".ele")
+    m.is2d=False;
+
+
