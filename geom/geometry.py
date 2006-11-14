@@ -31,6 +31,8 @@ class point(geomobject):
         self.data=(n,p1,p2,p3)
     def getxyz(self):
         return self.data[1:]
+    def getn(self):
+        return self.data[0]
     def getstr(self):
         return "%f, %f, %f"%self.getxyz()
 
