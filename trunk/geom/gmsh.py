@@ -4,7 +4,7 @@ from pyparsing import Word, Optional, alphas, nums, Combine, Literal, \
 CaselessLiteral, LineEnd, Group, Dict, OneOrMore, StringEnd, restOfLine, \
 ParseException, oneOf, Forward, alphanums, Keyword, SkipTo
 
-import geom
+import geometry as geom
 
 
 def read_gmsh(filename):
