@@ -3,6 +3,8 @@ femgeom
 
 Ondrej Certik <ondrej@certik.cz>
 
+homepage: http://code.google.com/p/femgeom/
+
 Geometry utilities for FEM modeling.
 
 geometry import:
@@ -36,3 +38,9 @@ apt-get install python-pyparsing
 
 Create a geometry in gmsh, convert to tetgen, run tetgen, convert mesh to
 libmesh, assembly & solve.
+
+Example
+-------
+
+cd example
+./convert.py
