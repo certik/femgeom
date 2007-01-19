@@ -44,3 +44,5 @@ Example
 
 cd example
 ./convert.py
+
+this meshes a gmsh geometry
