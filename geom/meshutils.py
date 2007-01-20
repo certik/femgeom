@@ -2069,6 +2069,16 @@ class mesh:
     def writeregions(self,filename):
         f=open(filename,"w")
         f.write(str(self.regions))
+    def writeBC(self,filename):
+        """self.faces contain triplets (p1,p2,p3) which are triangles of
+        tetrahedrons on the boundary. We need to find the number of each
+        corresponding tetrahedron and it's side."""
+        #use the findelements from bound. probably extract it, or create some 
+        #new class for it, I don't know. This class should be refactored
+        #anyway, to include better IO interface, as I was thinking a year
+        #ago
+        f=open(filename,"w")
+        f.write(str(self.faces))
 
 
 def formatpos(n,T):
