@@ -3,7 +3,7 @@ import math
 import meshutils
 import geometry as geom
 
-def conv(x):
+def numlist2str(x):
     s=""
     for i in x:
         s+="%d "%i
@@ -24,22 +24,25 @@ def write_tetgen(g,filename):
     #facets
     facets=[]
     for x in g.d2.values():
-        if isinstance(x,geom.planesurface) or isinstance(x,geom.ruledsurface):
-            p=[map[y.getn()] for y in x.getpoints()]
-            facets.append(p)
-        elif isinstance(x,geom.surfaceloop):
-            continue
-        else:
-            print "Warning: unknown element ",type(x)
-            continue
+        assert isinstance(x,geom.surface)
+        p=[map[y.getn()] for y in x.getpoints()]
+        facets.append(p)
     s+="\n%d 0\n"%len(facets)
     for x in facets:
-        s+="%d %s\n"%(len(x),conv(x))
+        s+="%d %s\n"%(len(x),numlist2str(x))
 
     #holes
     s+="\n0\n"
+
     #regions
-    s+="\n0\n"
+    regions=[]
+    for x in g.phys3.values():
+        assert isinstance(x,geom.physicalvolume)
+        for v in x.getvolumes():
+            regions.append(v.getinsidepoint()+[x.getn()])
+    s+="\n%d\n"%len(regions)
+    for i,x in enumerate(regions):
+        s+="%d %f %f %f %d\n"%(i,x[0],x[1],x[2],x[3])
     open(filename,"w").write(s)
 
 def read_tetgen(m,fname):
@@ -62,12 +65,19 @@ def read_tetgen(m,fname):
         l=[int(x) for x in f.readline().split()]
         ntetra,nnod,nattrib=l
         assert nnod==4
+        if nattrib!=1:
+            raise "tetgen didn't assign an entity number to each element \
+(option -A)"
         els=[]
         for line in f:
             if line[0]=="#": continue
             l=[float(x) for x in line.split()]
+            assert len(l)==6
             l[0]=int(l[0])
             els.append((l[0],54,l[1],l[2],l[3],l[4]))
+            if l[5]==0:
+                raise "there are elements not belonging to any physical entity"
+            print l[5]
             assert l[0]==len(els)
         return els
     m.nodes=getnodes(fname+".node")

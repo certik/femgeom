@@ -76,36 +76,34 @@ def read_gmsh(filename):
         print err
         raise err
 
+    lineloops={}
+    surfaceloops={}
     g=geom.geometry()
     for x in tokens:
         if x[0]=="Point":
-            g.add0(geom.point(int(x[1]),float(x[2][0]),float(x[2][1]),
-                float(x[2][2])))
-
+            g.addpoint(int(x[1]),[float(x[2][0]),float(x[2][1]),float(x[2][2])])
         elif x[0]=="Line":
             assert len(x[2])==2
-            g.add1(geom.line(int(x[1]),int(x[2][0]),int(x[2][1])))
+            g.addline(int(x[1]),[int(x[2][0]),int(x[2][1])])
         elif x[0]=="Circle":
             assert len(x[2])==3
             g.add1(geom.circle(int(x[1]),int(x[2][0]),int(x[2][1]),
                 int(x[2][2])))
         elif x[0]=="Line Loop":
-            g.add1(geom.lineloop(int(x[1]),[int(y) for y in x[2]]))
-
+            lineloops[int(x[1])]=[int(y) for y in x[2]]
         elif x[0]=="Plane Surface":
             assert len(x[2])==1
-            g.add2(geom.planesurface(int(x[1]),int(x[2][0])))
+            g.addsurface(int(x[1]),lineloops[int(x[2][0])])
         elif x[0]=="Ruled Surface":
             assert len(x[2])==1
-            g.add2(geom.ruledsurface(int(x[1]),int(x[2][0])))
+            g.addsurface(int(x[1]),lineloops[int(x[2][0])])
         elif x[0]=="Surface Loop":
-            g.add2(geom.surfaceloop(int(x[1]),[int(y) for y in x[2]]))
-
+            surfaceloops[int(x[1])]=[int(y) for y in x[2]]
         elif x[0]=="Volume":
             assert len(x[2])==1
-            g.add3(geom.volume(int(x[1]),int(x[2][0])))
+            g.addvolume(int(x[1]),surfaceloops[int(x[2][0])])
         elif x[0]=="Physical Volume":
-            g.addphys3(geom.physvolume(int(x[1]),[int(y) for y in x[2]]))
+            g.addphysicalvolume(int(x[1]),[int(y) for y in x[2]])
         else:
             raise "Unsupported entity: "+x[0]
     return g
