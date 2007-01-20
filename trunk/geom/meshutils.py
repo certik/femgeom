@@ -2066,6 +2066,10 @@ class mesh:
             scalars=[float(x) for x in l.split()]
             check(len(scalars),nnod)
             return scalars
+    def writeregions(self,filename):
+        f=open(filename,"w")
+        f.write(str(self.regions))
+
 
 def formatpos(n,T):
     #n=(n1,n2,n3...)

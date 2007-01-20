@@ -2,6 +2,8 @@ import math
 
 import geometry as geom
 
+from meshutils import mesh,bound
+
 def numlist2str(x):
     s=""
     for i in x:
@@ -25,10 +27,11 @@ def write_tetgen(g,filename):
     for x in g.d2.values():
         assert isinstance(x,geom.surface)
         p=[map[y.getn()] for y in x.getpoints()]
-        facets.append(p)
-    s+="\n%d 0\n"%len(facets)
+        bc=g.getBCnum(x.getn())
+        facets.append(p+[bc])
+    s+="\n%d 1\n"%len(facets)
     for x in facets:
-        s+="%d %s\n"%(len(x),numlist2str(x))
+        s+="%d %s %d\n"%(len(x)-1,numlist2str(x[:-1]),x[-1])
 
     #holes
     s+="\n0\n"
@@ -44,7 +47,7 @@ def write_tetgen(g,filename):
         s+="%d %f %f %f %d\n"%(i,x[0],x[1],x[2],x[3])
     open(filename,"w").write(s)
 
-def read_tetgen(m,fname):
+def read_tetgen(fname):
     def getnodes(fnods):
         f=file(fnods)
         l=[int(x) for x in f.readline().split()]
@@ -84,5 +87,9 @@ def read_tetgen(m,fname):
                 regions[regionnum]=[l[0]]
             assert l[0]==len(els)
         return els,regions
+
+    m=mesh()
+    b=bound()
     m.nodes=getnodes(fname+".node")
     m.elements,m.regions=getele(fname+".ele")
+    return m,b

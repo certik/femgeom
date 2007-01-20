@@ -50,3 +50,4 @@ Volume (23) = {1000023};
 Surface Loop(1000046) = {44,-13,32,36,40,45};
 Volume(24) = {1000046};
 Physical Volume(100)={23,24};
+Physical Surface(1) = {32,36};

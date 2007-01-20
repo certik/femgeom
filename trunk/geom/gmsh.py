@@ -56,6 +56,10 @@ def read_gmsh(filename):
             Keyword("Volume")+lpar+inum+rpar+eq+
             Group(lbrace+inum+rbrace)+semi
             )
+    physicalsurface = Group(
+            Keyword("Physical Surface")+lpar+inum+rpar+eq+
+            Group(lbrace+inum+OneOrMore(colon+inum)+rbrace)+semi
+            )
     physicalvolume = Group(
             Keyword("Physical Volume")+lpar+inum+rpar+eq+
             Group(lbrace+inum+OneOrMore(colon+inum)+rbrace)+semi
@@ -64,7 +68,7 @@ def read_gmsh(filename):
     comment = Group( Literal("//")+restOfLine).suppress()
 
     command = point | line | lineloop | circle | planesurface | ruledsurface | \
-            surfaceloop | volume | physicalvolume | comment
+            surfaceloop | volume | physicalsurface | physicalvolume | comment
 
     grammar= OneOrMore(command)+StringEnd()
 
@@ -102,6 +106,8 @@ def read_gmsh(filename):
         elif x[0]=="Volume":
             assert len(x[2])==1
             g.addvolume(int(x[1]),surfaceloops[int(x[2][0])])
+        elif x[0]=="Physical Surface":
+            g.addphysicalsurface(int(x[1]),[int(y) for y in x[2]])
         elif x[0]=="Physical Volume":
             g.addphysicalvolume(int(x[1]),[int(y) for y in x[2]])
         else:
