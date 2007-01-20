@@ -1,11 +1,39 @@
 femgeom
 =======
 
-Ondrej Certik <ondrej@certik.cz>
-
+author: Ondrej Certik <ondrej@certik.cz>
 homepage: http://code.google.com/p/femgeom/
 
-Geometry utilities for FEM modeling.
+Geometry utilities for FEM modeling. The goal of this project is to enable this
+procedure:
+
+1. Create a geometry (currently only in gmsh) and specify geometry entities
+(insulator, electrode, air, surface1, surface2, ...).
+
+2. Import the geometry and entities in femgeom. 
+
+    g=geom.read_gmsh("/tmp/x.geo")
+
+3. Mesh the geometry.
+
+    geom.write_tetgen(g,"/tmp/t.smesh")
+    os.system("~/fzu/mesh/tetgen -pqQ -a0.01 /tmp/t.smesh")
+
+4. Export the mesh in any format (gmsh, libmesh,...) and list all the entities
+together with elements that belong to it and faces of elements if applicable
+(surfaces).
+
+    m=mesh()
+    geom.read_tetgen(m,"/tmp/t.1")
+    m.writemsh("/tmp/t12.msh")
+    m.writexda("/tmp/in.xda")
+
+
+That's all. So the input is a geometry+entities, output is a mesh+elements (and
+facets) numbers. Femgeom should handle the rest.
+
+Current capabilities:
+====================
 
 geometry import:
     - gmsh
@@ -45,4 +73,4 @@ Example
 cd example
 ./convert.py
 
-this meshes a gmsh geometry
+this meshes a gmsh geometry.
