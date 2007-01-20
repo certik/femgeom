@@ -24,6 +24,7 @@ class geometry(object):
         self.d1={}
         self.d2={}
         self.d3={}
+        self.phys2={}
         self.phys3={}
     def addpoint(self,n,p):
         "p=[x,y,z]"
@@ -41,10 +42,19 @@ class geometry(object):
         "v=[s1,s2,s3,...]"
         o=volume(self,n,v)
         self.d3[o.getn()]=o
+    def addphysicalsurface(self,n,surfacelist):
+        "surfacelist=[v1,v2,v3,...]"
+        o=physicalsurface(self,n,surfacelist)
+        self.phys2[o.getn()]=o
     def addphysicalvolume(self,n,volumelist):
         "volumelist=[v1,v2,v3,...]"
         o=physicalvolume(self,n,volumelist)
         self.phys3[o.getn()]=o
+    def getBCnum(self,snum):
+        for x in self.phys2:
+            if snum in self.phys2[x].surfaces:
+                return x
+        return 0
     def printinfo(self):
         print "General geometry information:"
         print "  points:",len(self.d0)
@@ -52,7 +62,10 @@ class geometry(object):
         print "  surfaces:",len(self.d2)
         print "  volumes:",len(self.d3)
         print "Physical entities:"
-        print "  volumes:"
+        print "  surfaces (boundary conditions):"
+        for d in self.phys2.values():
+            print "    %d: surface numbers %r"%(d.getn(),d.surfaces)
+        print "  volumes (regions):"
         for d in self.phys3.values():
             print "    %d: volume numbers %r"%(d.getn(),d.volumes)
 
@@ -121,7 +134,14 @@ class volume(geomobject):
         p0=sfs[0].getpoints()[0]
         direct=(pts[0]+pts[1]+pts[2])/3-p0
         return p0+0.001*direct
-#        return self.getsurfaces()[0].getpoints()[0].getxyz()
+
+class physicalsurface(geomobject):
+    def __init__(self,g,n,s):
+        self.geom=g
+        self.n=n
+        self.surfaces=s
+    def getsurfaces(self):
+        return [self.geom.d2[x] for x in self.surfaces]
 
 class physicalvolume(geomobject):
     def __init__(self,g,n,v):
