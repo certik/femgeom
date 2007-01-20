@@ -4,13 +4,15 @@ import sys
 sys.path.append("..")
 import os
 
+import pexpect
+
 import geom
 from geom.meshutils import mesh
 
-os.system("gmsh -0 t.geo -o /tmp/x.geo -v 0")
+pexpect.run("gmsh -0 t.geo -o /tmp/x.geo")
 g=geom.read_gmsh("/tmp/x.geo")
 geom.write_tetgen(g,"/tmp/t.smesh")
-os.system("~/fzu/mesh/tetgen -pqQ -a0.01 /tmp/t.smesh")
+pexpect.run("/home/ondra/fzu/mesh/tetgen -pq -a0.01 /tmp/t.smesh")
 
 m=mesh()
 geom.read_tetgen(m,"/tmp/t.1")
