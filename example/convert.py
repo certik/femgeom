@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+#import cgitb;cgitb.enable(format="text")
+
 import sys
 sys.path.append("..")
 import os

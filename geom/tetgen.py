@@ -39,7 +39,7 @@ def write_tetgen(g,filename):
     for x in g.phys3.values():
         assert isinstance(x,geom.physicalvolume)
         for v in x.getvolumes():
-            regions.append(v.getinsidepoint()+[x.getn()])
+            regions.append(v.getinsidepoint().getxyz()+[x.getn()])
     s+="\n%d\n"%len(regions)
     for i,x in enumerate(regions):
         s+="%d %f %f %f %d\n"%(i,x[0],x[1],x[2],x[3])
@@ -77,7 +77,6 @@ def read_tetgen(m,fname):
             els.append((l[0],54,l[1],l[2],l[3],l[4]))
             if l[5]==0:
                 raise "there are elements not belonging to any physical entity"
-            print l[5]
             assert l[0]==len(els)
         return els
     m.nodes=getnodes(fname+".node")

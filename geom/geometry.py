@@ -65,6 +65,16 @@ class point(geomobject):
         self.geom=g
         self.n=n
         self.p=p
+    def __add__(self,p):
+        return point(self.geom,-1,[a+b for a,b in zip(self.p,p.p)])
+    def __sub__(self,p):
+        return point(self.geom,-1,[a-b for a,b in zip(self.p,p.p)])
+    def __div__(self,num):
+        return point(self.geom,-1,[a/num for a in self.p])
+    def __mul__(self,num):
+        return point(self.geom,-1,[a*num for a in self.p])
+    def __rmul__(self,num):
+        return self.__mul__(num)
     def getxyz(self):
         return self.p
     def getstr(self):
@@ -83,6 +93,8 @@ class surface(geomobject):
         self.geom=g
         self.n=n
         self.lines=s
+    def getlines(self):
+        return [self.geom.d1[x] for x in self.lines]
     def getpoints(self):
         #self.lines contains the numbers of all the lines
         def p(idx):
@@ -92,6 +104,9 @@ class surface(geomobject):
             else:
                 return self.geom.d1[-idx].getpoints()[1]
         return [p(x) for x in self.lines]
+    def getinsidepoint(self):
+        pts=self.getpoints()[:3]
+        return (pts[0]+pts[1]+pts[2])/3
 
 class volume(geomobject):
     def __init__(self,g,n,v):
@@ -101,7 +116,12 @@ class volume(geomobject):
     def getsurfaces(self):
         return [self.geom.d2[x] for x in self.surfaces]
     def getinsidepoint(self):
-        return self.getsurfaces()[0].getpoints()[0].getxyz()
+        sfs=self.getsurfaces()[:3]
+        pts=[s.getinsidepoint() for s in sfs]
+        p0=sfs[0].getpoints()[0]
+        direct=(pts[0]+pts[1]+pts[2])/3-p0
+        return p0+0.001*direct
+#        return self.getsurfaces()[0].getpoints()[0].getxyz()
 
 class physicalvolume(geomobject):
     def __init__(self,g,n,v):
