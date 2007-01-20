@@ -36,5 +36,5 @@ m.writexda("/tmp/in.xda")
 print "Mesh written to /tmp/in.xda"
 m.writeregions("/tmp/t12.regions")
 print "Regions written to /tmp/t12.regions"
-m.writeregions("/tmp/t12.regions")
+m.writeBC("/tmp/t12.boundaries")
 print "Boundaries written to /tmp/t12.boundaries"
