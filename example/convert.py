@@ -11,6 +11,7 @@ from geom.meshutils import mesh
 
 pexpect.run("gmsh -0 t.geo -o /tmp/x.geo")
 g=geom.read_gmsh("/tmp/x.geo")
+g.printinfo()
 geom.write_tetgen(g,"/tmp/t.smesh")
 pexpect.run("/home/ondra/fzu/mesh/tetgen -pq -a0.01 /tmp/t.smesh")
 

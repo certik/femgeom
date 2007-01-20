@@ -19,6 +19,15 @@ class geometry(object):
         self.d3[o.getn()]=o
     def addphys3(self,o):
         self.phys3[o.getn()]=o
+    def printinfo(self):
+        print "General geometry information:"
+        print "  points:",len(self.d0)
+        print "  lines:",len(self.d1)
+        print "  surfaces:",len(self.d2)
+        print "  volumes:",len(self.d3)
+        print "Physical volumes:"
+        for d in self.phys3:
+            print d,self.phys3[d]
 
 class geomobject(object):
     def getn(self):
