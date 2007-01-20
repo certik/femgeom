@@ -1,24 +1,24 @@
 class geometry(object):
+    """The geometry is given by a sets of points (d0), lines (d1), surfaces
+    (d2) and volumes (d3). Lines are constructed from 2 points, surface from
+    any number of lines, volume from any number of surfaces.
+
+    Physical volumes are contruted from any number of volumes.
+    """
     def __init__(self):
         self.d0={}
         self.d1={}
         self.d2={}
         self.d3={}
         self.phys3={}
-    def add0(self,o):
-        o.geom=self
+    def addpoint(self,n,p):
+        "p=[x,y,z]"
+        o=point(self,n,p)
         self.d0[o.getn()]=o
-    def add1(self,o):
-        o.geom=self
+    def addline(self,n,l)
+        "l=[p1,p2]"
+        o=line(self,n,l)
         self.d1[o.getn()]=o
-    def add2(self,o):
-        o.geom=self
-        self.d2[o.getn()]=o
-    def add3(self,o):
-        o.geom=self
-        self.d3[o.getn()]=o
-    def addphys3(self,o):
-        self.phys3[o.getn()]=o
     def printinfo(self):
         print "General geometry information:"
         print "  points:",len(self.d0)
@@ -36,26 +36,28 @@ class geomobject(object):
         return str(type(self))[18]+repr(self.data[1:])
 
 class point(geomobject):
-    def __init__(self,n,p1,p2,p3):
-        self.data=(n,p1,p2,p3)
+    def __init__(self,g,n,p):
+        self.geom=g
+        self.n=n
+        self.p=p
     def getxyz(self):
-        return self.data[1:]
+        return self.p
     def getn(self):
-        return self.data[0]
+        return self.n
     def getstr(self):
         return "%f, %f, %f"%self.getxyz()
 
 class line(geomobject):
-    def __init__(self,n,p1,p2):
-        self.data=(n,)
+    def __init__(self,g,n,l):
+        self.geom=g
         self.n=n
-        self.points=p1,p2
+        self.points=l
     def getpoints(self):
-        return [self.geom.d0[x] for x in self.points]
-    def reverse(self):
-        l= line(-self.n,self.points[1],self.points[0])
-        l.geom=self.geom
-        return l
+        return self.points
+#    def reverse(self):
+#        l= line(-self.n,self.points[1],self.points[0])
+#        l.geom=self.geom
+#        return l
 
 class lineloop(geomobject):
     def __init__(self,n,lines):
