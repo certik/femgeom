@@ -1,6 +1,5 @@
 import math
 
-import meshutils
 import geometry as geom
 
 def numlist2str(x):
@@ -69,18 +68,21 @@ def read_tetgen(m,fname):
             raise "tetgen didn't assign an entity number to each element \
 (option -A)"
         els=[]
+        regions={}
         for line in f:
             if line[0]=="#": continue
             l=[float(x) for x in line.split()]
             assert len(l)==6
             l[0]=int(l[0])
             els.append((l[0],54,l[1],l[2],l[3],l[4]))
-            if l[5]==0:
+            regionnum=l[5]
+            if regionnum==0:
                 raise "there are elements not belonging to any physical entity"
+            if regions.has_key(regionnum):
+                regions[regionnum].append(l[0])
+            else:
+                regions[regionnum]=[l[0]]
             assert l[0]==len(els)
-        return els
+        return els,regions
     m.nodes=getnodes(fname+".node")
-    m.elements=getele(fname+".ele")
-    m.is2d=False;
-
-
+    m.elements,m.regions=getele(fname+".ele")

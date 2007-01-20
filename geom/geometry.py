@@ -54,7 +54,7 @@ class geometry(object):
         print "Physical entities:"
         print "  volumes:"
         for d in self.phys3.values():
-            print "    %d: %r"%(d.getn(),d.volumes)
+            print "    %d: volume numbers %r"%(d.getn(),d.volumes)
 
 class geomobject(object):
     def getn(self):
