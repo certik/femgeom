@@ -2073,12 +2073,45 @@ class mesh:
         """self.faces contain triplets (p1,p2,p3) which are triangles of
         tetrahedrons on the boundary. We need to find the number of each
         corresponding tetrahedron and it's side."""
-        #use the findelements from bound. probably extract it, or create some 
-        #new class for it, I don't know. This class should be refactored
-        #anyway, to include better IO interface, as I was thinking a year
-        #ago
+        def findelements(faces,elements):
+            """Returns element numbers (in a list), which lies
+            at the boundary determined by faces.
+            
+            Also returns the side of element. Currently only support
+            triangles and quadrangles.
+            """
+            el=[]
+            for p in elements:
+                for f in faces:
+                    nods=[]
+                    for i,n in enumerate(p[2:]): 
+                        if n in f: nods.append(i+1)
+                    if len(nods)!=len(f): continue
+                    if len(f)==3:
+                        if p[1] == pmdtetrahedron:
+                            if nods==[1,2,3]:
+                                side=1
+                            elif nods==[1,2,4]:
+                                side=2
+                            elif nods==[2,3,4]:
+                                side=3
+                            elif nods==[1,3,4]:
+                                side=4
+                            else:
+                                raise"findelements: tetrahedron face mischmatch"
+                            el.append((p[0],side))
+                        else:
+                            raise "findelements: unsupported element in mesh"
+                    else:
+                        raise "findelements: unsupported face %s"%(repr(f))
+            return el
+        #This class should be refactored anyway, to include better IO
+        #interface, as I was thinking a year ago
+        bc={}
+        for key in self.faces:
+            bc[key]=findelements(self.faces[key],self.elements)
         f=open(filename,"w")
-        f.write(str(self.faces))
+        f.write(str(bc))
 
 
 def formatpos(n,T):
