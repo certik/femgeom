@@ -1,3 +1,2 @@
 - export only physical entities
-- points in surface holes - use epsilon, the same as for the volume holes
-- check where the volume holes are actually used.... never? maybe only regions
+- fix the FIXME place in geometry - the whole hole thing.

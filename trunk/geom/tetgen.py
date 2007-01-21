@@ -11,7 +11,8 @@ def numlist2str(x):
     return s[:-1]
 
 def getinsidepoint(pts):
-    return (pts[0]+pts[1]+pts[2])/3
+    direct=(pts[0]+pts[1]+pts[2])/3-pts[0]
+    return pts[0]+0.001*direct
 
 def write_tetgen(g,filename):
     #nodes
@@ -26,6 +27,8 @@ def write_tetgen(g,filename):
         s+="%d %f %f %f\n"%tuple([n+1]+list(x))
 
     #facets
+    #first write external polygon, then hole polygons and then point in each
+    #hole polygon
     facets=[]
     for x in g.d2.values():
         assert isinstance(x,geom.surface)
