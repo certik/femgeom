@@ -10,6 +10,9 @@ def numlist2str(x):
         s+="%d "%i
     return s[:-1]
 
+def getinsidepoint(pts):
+    return (pts[0]+pts[1]+pts[2])/3
+
 def write_tetgen(g,filename):
     #nodes
     nodes=[]
@@ -27,13 +30,28 @@ def write_tetgen(g,filename):
     for x in g.d2.values():
         assert isinstance(x,geom.surface)
         p=[map[y.getn()] for y in x.getpoints()]
+        h=[]
+        pts=[]
+        for hole in x.getholepoints():
+            h.append([map[y.getn()] for y in hole])
+            pts.append(getinsidepoint(hole).getxyz())
         bc=g.getBCnum(x.getn())
-        facets.append(p+[bc])
+        facets.append((p,bc,h,pts))
+    # # of facets, boundary markers=yes
     s+="\n%d 1\n"%len(facets)
-    for x in facets:
-        s+="%d %s %d\n"%(len(x)-1,numlist2str(x[:-1]),x[-1])
+    for p,bc,h,holes in facets:
+        # # of polygons, # of holes, boundary marker
+        s+="%d %d %d\n"%(1+len(h),len(h),bc)
+        # # of corners, corner 1, corner 2, ...
+        s+="%d %s\n"%(len(p),numlist2str(p))
+        for x in h:
+            # # of corners, corner 1, corner 2, ...
+            s+="%d %s\n"%(len(x),numlist2str(x))
+        for i,pt in enumerate(holes):
+            # hole #, x, y, z
+            s+="%d %f %f %f\n"%(i+1,pt[0],pt[1],pt[2])
 
-    #holes
+    #volume holes
     s+="\n0\n"
 
     #regions
@@ -44,7 +62,7 @@ def write_tetgen(g,filename):
             regions.append(v.getinsidepoint().getxyz()+[x.getn()])
     s+="\n%d\n"%len(regions)
     for i,x in enumerate(regions):
-        s+="%d %f %f %f %d\n"%(i,x[0],x[1],x[2],x[3])
+        s+="%d %f %f %f %d\n"%(i+1,x[0],x[1],x[2],x[3])
     open(filename,"w").write(s)
 
 def read_tetgen(fname):

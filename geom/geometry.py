@@ -105,7 +105,14 @@ class surface(geomobject):
     def __init__(self,g,n,s):
         self.geom=g
         self.n=n
-        self.lines=s
+        self.lines,self.holes=self.separate(s)
+    def separate(self,s):
+        #FIXME
+        if len(s)<=4:
+            return s,[]
+        else:
+            assert len(s)==8
+            return s[:4],[s[4:]]
     def getlines(self):
         return [self.geom.d1[x] for x in self.lines]
     def getpoints(self):
@@ -117,6 +124,17 @@ class surface(geomobject):
             else:
                 return self.geom.d1[-idx].getpoints()[1]
         return [p(x) for x in self.lines]
+    def getholepoints(self):
+        def p(idx):
+            "Return the correct point of the line 'idx'"
+            if idx>0:
+                return self.geom.d1[idx].getpoints()[0]
+            else:
+                return self.geom.d1[-idx].getpoints()[1]
+        r=[]
+        for hole in self.holes:
+            r.append([p(x) for x in hole])
+        return r
     def getinsidepoint(self):
         pts=self.getpoints()[:3]
         return (pts[0]+pts[1]+pts[2])/3
