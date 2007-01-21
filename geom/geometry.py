@@ -107,12 +107,13 @@ class surface(geomobject):
         self.n=n
         self.lines,self.holes=self.separate(s)
     def separate(self,s):
-        #FIXME
+        #FIXME - this is just a quick hack to satisfy all the examples
         if len(s)<=4:
             return s,[]
-        else:
-            assert len(s)==8
+        elif len(s)==8:
             return s[:4],[s[4:]]
+        else:
+            return s,[]
     def getlines(self):
         return [self.geom.d1[x] for x in self.lines]
     def getpoints(self):

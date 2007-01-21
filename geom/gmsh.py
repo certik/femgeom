@@ -91,8 +91,9 @@ def read_gmsh(filename):
             g.addline(int(x[1]),[int(x[2][0]),int(x[2][1])])
         elif x[0]=="Circle":
             assert len(x[2])==3
-            g.add1(geom.circle(int(x[1]),int(x[2][0]),int(x[2][1]),
-                int(x[2][2])))
+            g.addline(int(x[1]),[int(x[2][0]),int(x[2][2])])
+            #g.add1(geom.circle(int(x[1]),int(x[2][0]),int(x[2][1]),
+            #    int(x[2][2])))
         elif x[0]=="Line Loop":
             lineloops[int(x[1])]=[int(y) for y in x[2]]
         elif x[0]=="Plane Surface":
