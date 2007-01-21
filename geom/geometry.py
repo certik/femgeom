@@ -127,7 +127,7 @@ class volume(geomobject):
         self.n=n
         self.surfaces=v
     def getsurfaces(self):
-        return [self.geom.d2[x] for x in self.surfaces]
+        return [self.geom.d2[abs(x)] for x in self.surfaces]
     def getinsidepoint(self):
         sfs=self.getsurfaces()[:3]
         pts=[s.getinsidepoint() for s in sfs]

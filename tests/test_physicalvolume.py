@@ -3,7 +3,7 @@ sys.path.append(".")
 
 import geom
 
-def test2():
+def xtest2():
     open("/tmp/t2.geo","w").write("""\
 Point(1) = {0.1, 0.1, 0, 0.1};
 Point(2) = {0.6, 0.1, 0, 0.1};
