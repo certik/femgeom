@@ -3,7 +3,7 @@
 #import cgitb;cgitb.enable(format="text")
 
 import sys
-sys.path.append("..")
+sys.path.append("../..")
 import os
 
 import pexpect
