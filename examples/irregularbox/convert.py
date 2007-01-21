@@ -24,10 +24,10 @@ def tetgen(tetgenpath,filename):
 pexpect.run("gmsh -0 t.geo -o /tmp/x.geo")
 g=geom.read_gmsh("/tmp/x.geo")
 g.printinfo()
-geom.write_tetgen(g,"/tmp/t.smesh")
+geom.write_tetgen(g,"/tmp/t.poly")
 
 print "Generating mesh..."
-tetgen("/home/ondra/fzu/mesh/tetgen","/tmp/t.smesh")
+tetgen("/home/ondra/fzu/mesh/tetgen","/tmp/t.poly")
 
 m,b=geom.read_tetgen("/tmp/t.1")
 m.writemsh("/tmp/t12.msh")

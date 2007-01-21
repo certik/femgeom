@@ -2,7 +2,7 @@ import math
 
 from pyparsing import Word, Optional, alphas, nums, Combine, Literal, \
 CaselessLiteral, LineEnd, Group, Dict, OneOrMore, StringEnd, restOfLine, \
-ParseException, oneOf, Forward, alphanums, Keyword, SkipTo
+ParseException, oneOf, Forward, alphanums, Keyword, SkipTo, ZeroOrMore
 
 import geometry as geom
 
@@ -58,11 +58,11 @@ def read_gmsh(filename):
             )
     physicalsurface = Group(
             Keyword("Physical Surface")+lpar+inum+rpar+eq+
-            Group(lbrace+inum+OneOrMore(colon+inum)+rbrace)+semi
+            Group(lbrace+inum+ZeroOrMore(colon+inum)+rbrace)+semi
             )
     physicalvolume = Group(
             Keyword("Physical Volume")+lpar+inum+rpar+eq+
-            Group(lbrace+inum+OneOrMore(colon+inum)+rbrace)+semi
+            Group(lbrace+inum+ZeroOrMore(colon+inum)+rbrace)+semi
             )
 
     comment = Group( Literal("//")+restOfLine).suppress()
