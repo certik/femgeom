@@ -7,8 +7,8 @@ homepage: http://code.google.com/p/femgeom/
 Geometry utilities for FEM modeling. The goal of this project is to enable this
 procedure:
 
-1. Create a geometry (currently only in gmsh) and specify geometry entities
-(insulator, electrode, air, surface1, surface2, ...).
+1. Create a geometry (currently only in gmsh) and specify geometry entities,
+i.e. regions (insulator, electrode, air) and boundaries (surface1, surface2).
 
 2. Import the geometry and entities in femgeom. 
 
@@ -30,7 +30,11 @@ together with elements that belong to it and faces of elements if applicable
 
 
 That's all. So the input is a geometry+entities, output is a mesh+elements (and
-facets) numbers. Femgeom should handle the rest.
+facets) numbers belonging to each entity. Femgeom should handle the rest. In
+you FEM code, you just load the mesh and in the assembly part, you assign a
+different parameter to different region (by using the element numbers femgeom
+tells you) and assign boundary conditions (by using the element numbers and
+sides of each element on boundary).
 
 Current capabilities:
 ====================
@@ -39,7 +43,7 @@ geometry import:
     - gmsh
 
 geometry export:
-    - comsol (former femlab)
+    - comsol (former femlab), there are bugs in it (and in comsol)
     - tetgen
 
 mesh import:
@@ -47,9 +51,17 @@ mesh import:
 
 mesh export:
     - libmesh
+    - gmsh
 
 other:
-    - reusable a 2d polygon partitioning submodule
+    - a reusable 2d polygon partitioning submodule
+
+future plans:
+    source code of tetgen can be freely downloaded, but it is not open source,
+    so I'll try to use netgen as well (it's probably not as good as tetgen, but
+    it's opensource) - but the thing is not only to properly handle the mesh
+    itself, but also the entities. Also having some other geometry import
+    besides gmsh would be fine. Also add export to gmsh.
 
 Testing
 -------
