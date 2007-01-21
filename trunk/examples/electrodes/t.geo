@@ -14,8 +14,8 @@ G = 2;          //electrode gap [um]
 A = 90;         //electrode tip angle [deg]
 L = G+1;        //opening length [um]
 W = 1;          //opening width [um]
-tC = 0.050;     //electrode (conductor) thicnkess [um]
-//tC = 1;     //electrode (conductor) thicnkess [um]
+//tC = 0.050;     //electrode (conductor) thicnkess [um]
+tC = 1;     //electrode (conductor) thicnkess [um]
 tI = 0.500;    //insulator (top) thickness [um]
 //tI = 1.800;    //insulator (top) thickness [um]
 D = G*10;       //dimension of the "system" cube [um]
@@ -38,7 +38,7 @@ l4 = newl; Line(l4) = {p4,p1};
 
 ll1 = newl; Line Loop(ll1) = {l1,l2,l3,l4}; // outer line loop
 
-Plane Surface(1) = {ll1};
+//Plane Surface(1) = {ll1};
 
 
 // insulator
@@ -70,7 +70,9 @@ Plane Surface(2) = {ll1,ll2};
 
 insulator_tmp[] = Extrude {0,0,tI+tC} {Surface{2};};
 
+Physical Volume(1) = {insulator_tmp[1]};
 
+/*
 // electrode left
 
 p1 = newp; Point(p1) = {-G/2,0,0,lc}; //electrode tip
@@ -134,3 +136,4 @@ substrate[] = Extrude {0,0,-D/2} {Surface{1};};
 //finally delete tmp volumes
 
 Delete {Volume{insulator_tmp[1]}; Volume{electrolyte_tmp[1]};}
+*/
