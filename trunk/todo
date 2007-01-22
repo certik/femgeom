@@ -1,2 +1,4 @@
 - export only physical entities
 - fix the FIXME place in geometry - the whole hole thing.
+- write a set of rules which the geometry needs to obey and if it does, then
+  tetgen will always mesh it without problem. 
