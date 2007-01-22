@@ -82,7 +82,8 @@ libmesh, assembly & solve.
 Example
 -------
 
-cd example
+cd examples
+cd surfacehole
 ./convert.py
 
 this meshes a gmsh geometry.
