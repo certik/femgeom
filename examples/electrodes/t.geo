@@ -141,6 +141,8 @@ substrate[] = Extrude {0,0,-D/2} {Surface{1};};
 
 Physical Volume(5) = {substrate[1]};
 
+Physical Surface(1) = {94};
+
 //finally delete tmp volumes
 
 Delete {Volume{insulator_tmp[1]}; Volume{electrolyte_tmp[1]};}
