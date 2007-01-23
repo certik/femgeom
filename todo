@@ -1,4 +1,12 @@
-- export only physical entities
-- fix the FIXME place in geometry - the whole hole thing.
+- export only physical entities - currently everything is exported, but during
+  import from tetgen, it will shout if there is some element without a physical
+  entity.
+- fix the FIXME place in geometry - the whole hole thing. The whole question
+  about holes needs to be thought through.
 - write a set of rules which the geometry needs to obey and if it does, then
-  tetgen will always mesh it without problem. 
+  tetgen will always mesh it without problem. It's in my email box.
+- show some progress when calculating element sides (% of the elements done).
+  increment every N elements, where N needs to be determined to be let's say
+  twice a second on my comp. So for small meshes the progress bar will not slow
+  things down.
+- play with GID to see how they do it.
