@@ -134,3 +134,27 @@ def read_tetgen(fname):
     m.elements,m.regions=getele(fname+".ele")
     m.faces=getBCfaces(fname+".face")
     return m
+
+def runtetgen(tetgenpath,filename,a=None,Q=None):
+    """Runs tetgen.
+    
+    tetgenpath ... the tetgen executable with a full path
+    filename ... the input file for tetgen (for example /tmp/t.poly)
+    a ... a maximum tetrahedron volume constraint
+    Q ... a minimum radius-edge ratio, tetgen default is 2.0
+    """
+    import pexpect
+    cmd = "%s -pQAq" % (tetgenpath)
+    if Q!=None:
+        cmd=cmd+"%f"%Q
+    if a!=None:
+        cmd=cmd+" -a%f"%(a)
+    cmd=cmd+" %s"%(filename)
+    print "calling:", cmd
+    p=pexpect.spawn(cmd)
+    p.expect("Opening %s."%(filename))
+    assert p.before==""
+    p.expect(pexpect.EOF)
+    if p.before!="\r\n":
+        print p.before
+        raise "Error when running tetgen (see above for output): %s"%cmd
