@@ -68,6 +68,24 @@ class geometry(object):
         print "  volumes (regions):"
         for d in self.phys3.values():
             print "    %d: volume numbers %r"%(d.getn(),d.volumes)
+    def leaveonlyphysicalvolumes(self):
+        points={}
+        lines={}
+        surfaces={}
+        volumes={}
+        for e in self.phys3:
+            for v in self.phys3[e].getvolumes():
+                volumes[v.getn()]=v
+                for s in v.getsurfaces():
+                    surfaces[s.getn()]=s
+                    for l in s.getlines():
+                        lines[l.getn()]=l
+                        for p in l.getpoints():
+                            points[p.getn()]=p
+        self.d0=points
+        self.d1=lines
+        self.d2=surfaces
+        self.d3=volumes
 
 class geomobject(object):
     def getn(self):
@@ -115,7 +133,7 @@ class surface(geomobject):
         else:
             return s,[]
     def getlines(self):
-        return [self.geom.d1[x] for x in self.lines]
+        return [self.geom.d1[abs(x)] for x in self.lines]
     def getpoints(self):
         #self.lines contains the numbers of all the lines
         def p(idx):
