@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+#problem: probably with surface holes, it doesn't work correctly. Also with
+# arcs - they approximated by lines.
+
 import sys
 sys.path.append("../..")
 
