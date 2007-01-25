@@ -87,3 +87,49 @@ cd surfacehole
 ./convert.py
 
 this meshes a gmsh geometry.
+
+
+
+Geometry
+========
+
+The geometry class (geometry.py) holds the whole geometry. It is constructed
+using:
+
+addpoint(), addline(), addsurface(), addvolume(), addphysicalsurface() and
+addphysicalvolume()
+
+You can call these methods manually, or use read_gmsh() which imports gmsh
+geometry file (*.geo) using these methods.
+
+You can add any number of points, lines, surfaces, volumes. But you must
+specify some physical volumes - and those are the ones which are going to be
+exported (together with and only with the necessary surfaces, lines and
+points). Optionally, you can specify some physical surfaces for applying BC
+conditions, for which you will get all the points and elements (with sides)
+belonging to them.
+
+The geometry which tetgen can mesh must conform to the following rules:
+
+* the whole body (geometry) is just a part of a space enclosed by plane
+  surfaces in a way that it's waterproof, i.e. there is no way how the water
+  could get inside the body
+
+* optionally, there can be holes inside the body (enclosed by plane surfaces)
+
+* optionally, there can be plane surfaces inside the body. Tetgen will make
+  sure, that the tetrahedrons will respect that surface (so you can have the
+  body made of different materials). I know, that if the surfaces form a closed
+  object, or stretch from one boundary of the body to the other one, it's ok. I
+  haven't tried other possibilities (but I think noone needs it). The
+  surfaces inside the body cannot touch each other by the plane. If you want
+  that, you need to redesign the geometry by merging the intersection of such
+  surfaces into one.
+
+
+The write_tetgen() exports all the physical volumes together with their numbers
+to tetgen (and also all the physical surfaces with numbers). read_tetgen will
+read all the elements together with physical volume numbers which they belong
+to, plus all the nodes and elements with sides which belong to each physical
+surfaces specified in the geometry. This allows you to make the mesh generation
+and applying BC fully automatic.
