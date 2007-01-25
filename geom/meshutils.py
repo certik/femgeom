@@ -420,7 +420,7 @@ class mesh:
         #writing:
         #  I1: written to RP
         #  msh,ELE,NOD: isn't used
-        self.is2d=True #is the problem 2D (z==0) ?
+        self.is2d=False #is the problem 2D (z==0) ?
         #reading:
         #  I1: set automatically distinguishing between (x,y) and(x,y,z)
         #  msh: set automatically dis. (x,y,"0") and (x,y,z)

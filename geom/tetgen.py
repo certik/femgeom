@@ -2,7 +2,7 @@ import math
 
 import geometry as geom
 
-from meshutils import mesh,bound
+from meshutils import mesh
 
 def numlist2str(x):
     s=""
@@ -15,6 +15,7 @@ def getinsidepoint(pts):
     return pts[0]+0.001*direct
 
 def write_tetgen(g,filename):
+    g.leaveonlyphysicalvolumes()
     #nodes
     nodes=[]
     map={}
@@ -100,6 +101,7 @@ def read_tetgen(fname):
             els.append((l[0],54,l[1],l[2],l[3],l[4]))
             regionnum=l[5]
             if regionnum==0:
+                print "see %s, element # %d"%(fele,l[0])
                 raise "there are elements not belonging to any physical entity"
             if regions.has_key(regionnum):
                 regions[regionnum].append(l[0])
@@ -128,8 +130,7 @@ def read_tetgen(fname):
         return faces
 
     m=mesh()
-    b=bound()
     m.nodes=getnodes(fname+".node")
     m.elements,m.regions=getele(fname+".ele")
     m.faces=getBCfaces(fname+".face")
-    return m,b
+    return m

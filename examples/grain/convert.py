@@ -11,8 +11,9 @@ import pexpect
 import geom
 
 def tetgen(tetgenpath,filename):
-    #cmd="%s -pqQA -a0.01 %s"%(tetgenpath,filename)
+#    cmd="%s -pqQA -a0.01 %s"%(tetgenpath,filename)
     cmd="%s -pqQA %s"%(tetgenpath,filename)
+    #cmd="%s -pqQA -a0.001 %s"%(tetgenpath,filename)
     p=pexpect.spawn(cmd)
     p.expect("Opening %s."%(filename))
     assert p.before==""
@@ -31,7 +32,7 @@ print "Generating mesh using tetgen..."
 tetgen("/home/ondra/fzu/mesh/tetgen","/tmp/t.poly")
 
 print "Reading mesh from tetgen..."
-m,b=geom.read_tetgen("/tmp/t.1")
+m=geom.read_tetgen("/tmp/t.1")
 m.writemsh("/tmp/t12.msh")
 print "Mesh written to /tmp/t12.msh"
 m.writexda("/tmp/in.xda")
