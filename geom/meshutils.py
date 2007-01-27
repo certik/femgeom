@@ -2111,8 +2111,24 @@ class mesh:
         for key in self.faces:
             bc[key]=findelements(self.faces[key],self.elements)
         f=open(filename,"w")
-        f.write(str(bc))
+        #f.write(repr(bc))
+        for k in bc:
+            f.write("%d %d %s\n"%(k,len(bc[k]),numlist2str(flat(bc[k]))))
 
+def flat(a):
+    r=[]
+    for x in a:
+        if isinstance(x,list) or isinstance(x,tuple):
+            r.extend(flat(x))
+        else:
+            r.append(x)
+    return r
+
+def numlist2str(x):
+    s=""
+    for i in x:
+        s+="%d "%i
+    return s[:-1]
 
 def formatpos(n,T):
     #n=(n1,n2,n3...)
