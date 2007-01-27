@@ -75,6 +75,10 @@ Prerequisites:
 
 apt-get install python-pyparsing
 
+download and make tetgen:
+
+./make
+
 
 Create a geometry in gmsh, convert to tetgen, run tetgen, convert mesh to
 libmesh, assembly & solve.
