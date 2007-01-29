@@ -2113,6 +2113,12 @@ class mesh:
             return el
         #This class should be refactored anyway, to include better IO
         #interface, as I was thinking a year ago
+        #use a different algorithm:
+        #* build a map: nodes->elements - this is O(n) problem
+        #* use the nodes in self.faces[] to get the elements, this is O(n)
+        # problem - you need to get all the elements from all the three nodes
+        # and find the intersection - this should be exactly 1 element
+        #* check which side of this element it is - O(1) problem
         bc={}
         for key in self.faces:
             bc[key]=findelements(self.faces[key],self.elements)
