@@ -2112,11 +2112,12 @@ class mesh:
             bc[key]=findelements(self.faces[key],self.elements)
         f=open(filename,"w")
         #f.write(repr(bc))
+        f.write("%d\n"%len(bc))
         for k in bc:
             f.write("%d %d %s\n"%(k,len(bc[k]),numlist2str(flat(bc[k]))))
-        print bc[1]
-        for i in range(3):
-            print bc[1][i], self.elements[bc[1][i][0]-1] 
+#        print bc[2]
+#        for i in range(len(bc[2])):
+#            print bc[2][i], self.elements[bc[2][i][0]-1] 
 
 def flat(a):
     r=[]
