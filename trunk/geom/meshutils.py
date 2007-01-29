@@ -2080,9 +2080,13 @@ class mesh:
             Also returns the side of element. Currently only support
             triangles and quadrangles.
             """
+            t=len(elements)
+            c=0
             el=[]
             for p in elements:
-                for f in faces:
+                c+=1
+                if c%500==0: print 100.0*c/t
+                for ii,f in enumerate(faces):
                     nods=[]
                     for i,n in enumerate(p[2:]): 
                         if n in f: nods.append(i+1)
@@ -2100,6 +2104,8 @@ class mesh:
                             else:
                                 raise"findelements: tetrahedron face mischmatch"
                             el.append((p[0],side))
+                            del faces[ii]
+                            break;
                         else:
                             raise "findelements: unsupported element in mesh"
                     else:
