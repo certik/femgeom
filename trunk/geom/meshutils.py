@@ -378,6 +378,14 @@ class bound:
         return elnum
 
 class mesh:
+    #This class should be refactored anyway, to include better IO
+    #interface, as I was thinking a year ago
+    #the bound() is probably unnecessary, and the IO routines 
+    #(pmd,libmesh,gmsh,tetgen...) should be done in some clever way
+    #currently tetgen is in the module tetgen, others are here, then
+    #the geometry is in tetgen and gmsh modules... 
+    #ideal solution is to have 2 classes: geometry and mesh. both would
+    #support import/export in some clean way.
     def __init__(self):
         self.clean()
     def clean(self):
@@ -2111,17 +2119,49 @@ class mesh:
                     else:
                         raise "findelements: unsupported face %s"%(repr(f))
             return el
-        #This class should be refactored anyway, to include better IO
-        #interface, as I was thinking a year ago
-        #use a different algorithm:
-        #* build a map: nodes->elements - this is O(n) problem
-        #* use the nodes in self.faces[] to get the elements, this is O(n)
-        # problem - you need to get all the elements from all the three nodes
-        # and find the intersection - this should be exactly 1 element
-        #* check which side of this element it is - O(1) problem
+        def buildmapping(elements):
+            m={}
+            for e in elements:
+                for n in e[2:]:
+                    if not m.has_key(n): m[n]=[]
+                    m[n].append(e[0])
+            return m
+        def findelements2(faces,elements,nemap):
+            bc=[]
+            for f in faces:
+                assert len(f)==3
+                candidates=set(nemap[f[0]])
+                candidates.intersection_update(nemap[f[1]])
+                candidates.intersection_update(nemap[f[2]])
+                assert len(candidates)==1  #the face "f" belongs to just 1 el.
+                elnum=candidates.pop()
+                el=elements[elnum-1]
+                assert el[0]==elnum  #the mapping "nemap" is correct
+                nods=[]
+                for i,n in enumerate(el[2:]): 
+                    if n in f: nods.append(i+1)
+                assert len(nods)==len(f) #the mapping "nemap" is correct
+                if el[1] == pmdtetrahedron:
+                    if nods==[1,2,3]:
+                        side=1
+                    elif nods==[1,2,4]:
+                        side=2
+                    elif nods==[2,3,4]:
+                        side=3
+                    elif nods==[1,3,4]:
+                        side=4
+                    else:
+                        raise"findelements: tetrahedron face mischmatch"
+                    bc.append((elnum,side))
+                else:
+                    raise "findelements: unsupported element in mesh"
+            return bc
+
+        nemap=buildmapping(self.elements)
         bc={}
         for key in self.faces:
-            bc[key]=findelements(self.faces[key],self.elements)
+            #bc[key]=findelements(self.faces[key],self.elements)
+            bc[key]=findelements2(self.faces[key],self.elements,nemap)
         f=open(filename,"w")
         #f.write(repr(bc))
         f.write("%d\n"%len(bc))
