@@ -151,7 +151,7 @@ def runtetgen(tetgenpath,filename,a=None,Q=None):
         cmd=cmd+" -a%f"%(a)
     cmd=cmd+" %s"%(filename)
     print "calling:", cmd
-    p=pexpect.spawn(cmd)
+    p=pexpect.spawn(cmd,timeout=None)
     p.expect("Opening %s."%(filename))
     assert p.before==""
     p.expect(pexpect.EOF)
