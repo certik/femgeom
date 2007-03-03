@@ -159,7 +159,7 @@ def runtetgen(tetgenpath,filename,a=None,Q=None):
     if a!=None:
         cmd=cmd+" -a%f"%(a)
     cmd=cmd+" %s"%(filename)
-    print "calling:", cmd
+    print "Generating mesh using", cmd
     p=pexpect.spawn(cmd,timeout=None)
     p.expect("Opening %s."%(filename))
     assert p.before==""
