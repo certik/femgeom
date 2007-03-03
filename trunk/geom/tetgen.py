@@ -3,6 +3,7 @@ import math
 import geometry as geom
 
 from meshutils import mesh
+import progressbar
 
 def numlist2str(x):
     s=""
@@ -70,11 +71,12 @@ def write_tetgen(g,filename):
     open(filename,"w").write(s)
 
 def read_tetgen(fname):
-    def getnodes(fnods):
+    def getnodes(fnods,up):
         f=file(fnods)
         l=[int(x) for x in f.readline().split()]
         npoints,dim,nattrib,nbound=l
         assert dim==3
+        up.init(npoints)
         nodes=[]
         for line in f:
             if line[0]=="#": continue
@@ -82,13 +84,15 @@ def read_tetgen(fname):
             l[0]=int(l[0])
             nodes.append(tuple(l))
             assert l[0]==len(nodes)
+            up.update(l[0])
         assert npoints==len(nodes)
         return nodes
-    def getele(fele):
+    def getele(fele,up):
         f=file(fele)
         l=[int(x) for x in f.readline().split()]
         ntetra,nnod,nattrib=l
         assert nnod==4
+        up.init(ntetra)
         if nattrib!=1:
             raise "tetgen didn't assign an entity number to each element \
 (option -A)"
@@ -108,14 +112,16 @@ def read_tetgen(fname):
             else:
                 regions[regionnum]=[l[0]]
             assert l[0]==len(els)
+            up.update(l[0])
         return els,regions
-    def getBCfaces(ffaces):
+    def getBCfaces(ffaces,up):
         f=file(ffaces)
         l=[int(x) for x in f.readline().split()]
         nfaces,nattrib=l
         if nattrib!=1:
             raise "tetgen didn't assign an entity number to each face \
 (option -A)"
+        up.init(nfaces)
         faces={}
         for line in f:
             if line[0]=="#": continue
@@ -127,12 +133,15 @@ def read_tetgen(fname):
                 faces[regionnum].append((l[1],l[2],l[3]))
             else:
                 faces[regionnum]=[(l[1],l[2],l[3])]
+            up.update(l[0])
         return faces
 
+    print "Reading mesh from tetgen..."
     m=mesh()
-    m.nodes=getnodes(fname+".node")
-    m.elements,m.regions=getele(fname+".ele")
-    m.faces=getBCfaces(fname+".face")
+    m.nodes=getnodes(fname+".node",progressbar.MyBar("        nodes:"))
+    m.elements,m.regions=getele(fname+".ele",
+            progressbar.MyBar("        elements:"))
+    m.faces=getBCfaces(fname+".face",progressbar.MyBar("        BC:"))
     return m
 
 def runtetgen(tetgenpath,filename,a=None,Q=None):
