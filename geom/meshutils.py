@@ -62,12 +62,13 @@ pmdhexahedron=56 #Hexahedron (8 or 20 nodes)
 pmdsemiloof=61 #triangular semi-loof (6 nodes)
 
 #libmesh element types, see
-#http://libmesh.sourceforge.net/doxygen/namespacelibMeshEnums.html#a173
+#http://libmesh.sourceforge.net/doxygen/namespacelibMeshEnums.php#54ee290fca7f0c26eb1e5986f52714574518904c8c2948ef3d2869c4cb4a2b8f
 #2D elements:
 libmeshtriangle=3 #TRI3
 libmeshquadrangle=5 #QUAD4
 #3D elements
 libmeshtetrahedron=8 #TET4
+libmeshtetrahedron_quad=9 #TET10
 libmeshhexahedron=10 #HEX8
 libmeshprism=13 #PRISM6
 
@@ -802,7 +803,11 @@ class mesh:
             elif t==pmdquadrangle:
                 elt=libmeshquadrangle
             elif t==pmdtetrahedron:
-                elt=libmeshtetrahedron
+                if len(p)==4:
+                    elt=libmeshtetrahedron
+                else:
+                    assert len(p)==10
+                    elt=libmeshtetrahedron_quad
             elif t==pmdhexahedron:
                 elt=libmeshhexahedron
             elif t==pmdprism:

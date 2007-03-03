@@ -91,7 +91,9 @@ def read_tetgen(fname):
         f=file(fele)
         l=[int(x) for x in f.readline().split()]
         ntetra,nnod,nattrib=l
-        assert nnod==4
+        #we have either linear or quadratic tetrahedra:
+        assert nnod in [4,10]
+        linear= (nnod==4)
         up.init(ntetra)
         if nattrib!=1:
             raise "tetgen didn't assign an entity number to each element \
@@ -101,9 +103,15 @@ def read_tetgen(fname):
         for line in f:
             if line[0]=="#": continue
             l=[int(x) for x in line.split()]
-            assert len(l)==6
-            els.append((l[0],54,l[1],l[2],l[3],l[4]))
-            regionnum=l[5]
+            if linear:
+                assert len(l)-2 == 4 
+                els.append((l[0],54,l[1],l[2],l[3],l[4]))
+                regionnum=l[5]
+            else:
+                assert len(l)-2 == 10 
+                els.append((l[0],54,l[1],l[2],l[3],l[4],
+                    l[5],l[6],l[7],l[8],l[9],l[10]))
+                regionnum=l[11]
             if regionnum==0:
                 print "see %s, element # %d"%(fele,l[0])
                 raise "there are elements not belonging to any physical entity"
@@ -113,7 +121,7 @@ def read_tetgen(fname):
                 regions[regionnum]=[l[0]]
             assert l[0]==len(els)
             up.update(l[0])
-        return els,regions
+        return els,regions,linear
     def getBCfaces(ffaces,up):
         f=file(ffaces)
         l=[int(x) for x in f.readline().split()]
@@ -135,22 +143,47 @@ def read_tetgen(fname):
                 faces[regionnum]=[(l[1],l[2],l[3])]
             up.update(l[0])
         return faces
+    def calculatexyz(nodes, els):
+        """Calculate the missing xyz values in place"""
+        def avg(i,j,n4,nodes):
+            a=nodes[n4[i-1]-1]
+            b=nodes[n4[j-1]-1]
+            return (a[1]+b[1])/2, (a[2]+b[2])/2, (a[3]+b[3])/2
+        def getxyz(i,n4,nodes):
+            if i+5==5: return avg(1,2,n4,nodes)
+            if i+5==6: return avg(2,3,n4,nodes)
+            if i+5==7: return avg(1,3,n4,nodes)
+            if i+5==8: return avg(1,4,n4,nodes)
+            if i+5==9: return avg(2,4,n4,nodes)
+            if i+5==10: return avg(3,4,n4,nodes)
+            raise "wrong topology"
+        for e in els:
+            n4=e[2:2+4]
+            n6=e[2+4:2+4+10]
+            for i,n in enumerate(n6):
+                x,y,z=getxyz(i,n4,nodes)
+                nodes[n-1]=(n,x,y,z)
 
     print "Reading mesh from tetgen..."
     m=mesh()
     m.nodes=getnodes(fname+".node",progressbar.MyBar("        nodes:"))
-    m.elements,m.regions=getele(fname+".ele",
+    m.elements,m.regions, lin=getele(fname+".ele",
             progressbar.MyBar("        elements:"))
+    if not lin:
+        #tetgen doesn't compute xyz coordinates of the aditional 6 nodes
+        #(only of the 4 corner nodes) in tetrahedra.
+        calculatexyz(m.nodes,m.elements)
     m.faces=getBCfaces(fname+".face",progressbar.MyBar("        BC:"))
     return m
 
-def runtetgen(tetgenpath,filename,a=None,Q=None):
+def runtetgen(tetgenpath,filename,a=None,Q=None,quadratic=False):
     """Runs tetgen.
     
     tetgenpath ... the tetgen executable with a full path
     filename ... the input file for tetgen (for example /tmp/t.poly)
     a ... a maximum tetrahedron volume constraint
     Q ... a minimum radius-edge ratio, tetgen default is 2.0
+    quadratic ... False - generate linear elements, True - quadratic elements
     """
     import pexpect
     cmd = "%s -pQAq" % (tetgenpath)
@@ -158,6 +191,8 @@ def runtetgen(tetgenpath,filename,a=None,Q=None):
         cmd=cmd+"%f"%Q
     if a!=None:
         cmd=cmd+" -a%f"%(a)
+    if quadratic:
+        cmd=cmd+" -o2"
     cmd=cmd+" %s"%(filename)
     print "Generating mesh using", cmd
     p=pexpect.spawn(cmd,timeout=None)
