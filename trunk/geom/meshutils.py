@@ -1557,6 +1557,8 @@ class mesh:
         """
         if len(self.nodes) != len(self.scalars):
             error("Different number of nodes and scalars!")
+        up=progressbar.MyBar("Writing scalar field to %s:"%filename)
+        up.init(len(self.nodes)+len(self.elements))
         f=file(filename,"w")
         f.write("$PostFormat\n")
         #1.3 file-type data-size
@@ -1596,11 +1598,14 @@ class mesh:
             ))
         #time-step-values
         f.write("%d\n"%(0))
+        c=0
         #< scalar-point-value > ...
         for node in self.nodes:
             n=(self.getxyz(node[0]),)
             T=(self.getscalar(node[0]),)
             f.write(formatpos(n,T))
+            c+=1
+            up.update(c)
         #< scalar-triangles-value > ...
         for el in self.elements:
             if el[1] in [pmdtriangle,pmdtrianglerot]: 
@@ -1635,6 +1640,8 @@ class mesh:
                 self.getscalar(el[4]),
                 self.getscalar(el[5]))
                 f.write(formatpos(n,T))
+                c+=1
+                up.update(c)
         #< scalar-hexahedra-value > ...
         for el in self.elements:
             if el[1] == pmdhexahedron: 
