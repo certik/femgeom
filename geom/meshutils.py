@@ -30,6 +30,8 @@ import os
 
 from pyparsing import Word, Optional, alphas, nums, Combine, Literal, CaselessLiteral, LineEnd, Group, Dict, OneOrMore, StringEnd, restOfLine, ParseException, oneOf, Forward, alphanums
 
+import progressbar
+
 #gmsh element types, see 
 #http://www.geuz.org/gmsh/doc/texinfo/gmsh_10.html#SEC65
 #1D elements
@@ -786,9 +788,12 @@ class mesh:
         (so I use the same tabs and spaces as libmesh does).
 
         """
+        up=progressbar.MyBar("Writing mesh to %s:"%filename)
+        up.init(len(self.nodes)+2*len(self.elements))
         mapping=[]
         blocks={}
         sew=0
+        c=0
         for e in self.elements:
             p=[n-1 for n in e[2:]]
             t=e[1]
@@ -810,6 +815,8 @@ class mesh:
                 blocks[elt]=[p]
             mapping.append((elt,len(blocks[elt])))
             sew+=len(p)
+            c+=1
+            up.update(c)
         nels=[len(blocks[t]) for t in blocks.keys()]
         map2=[]
         for x in mapping:
@@ -846,14 +853,20 @@ class mesh:
         for block in blocks.values():
             for el in block:
                 f.write(("%d "*len(el))%tuple(el)+"\n")
+                c+=1
+                up.update(c)
         for node in self.nodes:
                 f.write("%e     %e  %e  \n"%tuple(node[1:]))
+                c+=1
+                up.update(c)
         for line in bs:
             f.write(("%d "*len(line))%tuple(line)+"\n")
     def writemsh(self,filename):
         """Writes mesh to filename (*.msh).
 
         """
+        up=progressbar.MyBar("Writing mesh to %s:"%filename)
+        up.init(len(self.nodes)+len(self.elements))
         f=file(filename,"w")
         l=f.write("$NOD\n")
         l=f.write("%d\n"%len(self.nodes))
@@ -862,6 +875,7 @@ class mesh:
                 f.write("%d %f %f %d\n"%node)
             else:
                 f.write("%d %f %f %f\n"%node)
+            up.update(node[0])
         l=f.write("$ENDNOD\n")
         l=f.write("$ELM\n")
         l=f.write("%d\n"%len(self.elements))
@@ -907,6 +921,7 @@ class mesh:
             n.extend(el[2:2+number_of_nodes])
             f.write("%d "*len(n)%tuple(n))
             f.write("\n")
+            up.update(len(self.nodes)+el[0])
         l=f.write("$ENDELM\n")
         f.close()
     def writemsh2(self,filename):
@@ -2157,16 +2172,23 @@ class mesh:
                     raise "findelements: unsupported element in mesh"
             return bc
 
+        up=progressbar.MyBar("Writing BC to %s:"%filename)
+        up.init(2*len(self.faces))
         nemap=buildmapping(self.elements)
         bc={}
+        c=0
         for key in self.faces:
             #bc[key]=findelements(self.faces[key],self.elements)
             bc[key]=findelements2(self.faces[key],self.elements,nemap)
+            c+=1
+            up.update(c)
         f=open(filename,"w")
         #f.write(repr(bc))
         f.write("%d\n"%len(bc))
         for k in bc:
             f.write("%d %d %s\n"%(k,len(bc[k]),numlist2str(flat(bc[k]))))
+            c+=1
+            up.update(c)
 #        print bc[2]
 #        for i in range(len(bc[2])):
 #            print bc[2][i], self.elements[bc[2][i][0]-1] 
