@@ -45,6 +45,7 @@ mshquadrangle=3 #Quadrangle (4 nodes)
 mshquadrangle2=10 #Second order quadrangle (9 nodes)
 #3D elements
 mshtetrahedron=4 #Tetrahedron (4 nodes)
+mshtetrahedron2=11 #Tetrahedron (10 nodes)
 mshprism=6 #Prism (6 nodes)
 mshhexahedron=5 #Hexahedron (8 nodes)
 
@@ -582,6 +583,14 @@ class mesh:
                     eltype=pmdtetrahedron
                     self.elements.append((pmdelm,eltype,
                         p[5],p[6],p[7],p[8]))
+                elif p[1] == mshtetrahedron2:
+                    if self.is2d:
+                        error("3D element in 2D mesh",2)
+                    pmdelm+=1
+                    eltype=pmdtetrahedron
+                    self.elements.append((pmdelm,eltype,
+                        p[5],p[6],p[7],p[8],
+                        p[9],p[10],p[11],p[12],p[13],p[14]))
                 elif p[1] == mshhexahedron:
                     if self.is2d:
                         error("3D element in 2D mesh",2)
@@ -902,9 +911,14 @@ class mesh:
                 number_of_nodes=8
                 #if we want 2nd order, fix it here
             elif el[1]==pmdtetrahedron:
-                eltype=mshtetrahedron
-                number_of_nodes=4
-                #if we want 2nd order, fix it here
+                if len(el[2:])==4:
+                    eltype=mshtetrahedron
+                    number_of_nodes=4
+                elif len(el[2:])==10:
+                    eltype=mshtetrahedron2
+                    number_of_nodes=10
+                else:
+                    assert False
             elif el[1]==pmdprism:
                 eltype=mshprism
                 number_of_nodes=6
@@ -1878,6 +1892,7 @@ class mesh:
                 tmp[node-1].append(data)  
         self.scalars=[]
         for s in tmp:
+            assert s!=[]
             self.scalars.append(self.average(s))
     def convert_stress_to_nodes(self):
         tmp=[]
