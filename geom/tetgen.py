@@ -70,13 +70,13 @@ def write_tetgen(g,filename):
         s+="%d %f %f %f %d\n"%(i+1,x[0],x[1],x[2],x[3])
     open(filename,"w").write(s)
 
-def read_tetgen(fname):
+def read_tetgen(fname,verbose=True):
     def getnodes(fnods,up):
         f=file(fnods)
         l=[int(x) for x in f.readline().split()]
         npoints,dim,nattrib,nbound=l
         assert dim==3
-        up.init(npoints)
+        if verbose: up.init(npoints)
         nodes=[]
         for line in f:
             if line[0]=="#": continue
@@ -84,7 +84,7 @@ def read_tetgen(fname):
             l[0]=int(l[0])
             nodes.append(tuple(l))
             assert l[0]==len(nodes)
-            up.update(l[0])
+            if verbose: up.update(l[0])
         assert npoints==len(nodes)
         return nodes
     def getele(fele,up):
@@ -94,7 +94,7 @@ def read_tetgen(fname):
         #we have either linear or quadratic tetrahedra:
         assert nnod in [4,10]
         linear= (nnod==4)
-        up.init(ntetra)
+        if verbose: up.init(ntetra)
         if nattrib!=1:
             raise "tetgen didn't assign an entity number to each element \
 (option -A)"
@@ -120,7 +120,7 @@ def read_tetgen(fname):
             else:
                 regions[regionnum]=[l[0]]
             assert l[0]==len(els)
-            up.update(l[0])
+            if verbose: up.update(l[0])
         return els,regions,linear
     def getBCfaces(ffaces,up):
         f=file(ffaces)
@@ -129,7 +129,7 @@ def read_tetgen(fname):
         if nattrib!=1:
             raise "tetgen didn't assign an entity number to each face \
 (option -A)"
-        up.init(nfaces)
+        if verbose: up.init(nfaces)
         faces={}
         for line in f:
             if line[0]=="#": continue
@@ -141,7 +141,7 @@ def read_tetgen(fname):
                 faces[regionnum].append((l[1],l[2],l[3]))
             else:
                 faces[regionnum]=[(l[1],l[2],l[3])]
-            up.update(l[0])
+            if verbose: up.update(l[0])
         return faces
     def calculatexyz(nodes, els):
         """Calculate the missing xyz values in place"""
@@ -164,7 +164,7 @@ def read_tetgen(fname):
                 x,y,z=getxyz(i,n4,nodes)
                 nodes[n-1]=(n,x,y,z)
 
-    print "Reading mesh from tetgen..."
+    if verbose: print "Reading mesh from tetgen..."
     m=mesh()
     m.nodes=getnodes(fname+".node",progressbar.MyBar("        nodes:"))
     m.elements,m.regions, lin=getele(fname+".ele",
@@ -176,7 +176,7 @@ def read_tetgen(fname):
     m.faces=getBCfaces(fname+".face",progressbar.MyBar("        BC:"))
     return m
 
-def runtetgen(tetgenpath,filename,a=None,Q=None,quadratic=False):
+def runtetgen(tetgenpath,filename,a=None,Q=None,quadratic=False,verbose=True):
     """Runs tetgen.
     
     tetgenpath ... the tetgen executable with a full path
@@ -194,7 +194,7 @@ def runtetgen(tetgenpath,filename,a=None,Q=None,quadratic=False):
     if quadratic:
         cmd=cmd+" -o2"
     cmd=cmd+" %s"%(filename)
-    print "Generating mesh using", cmd
+    if verbose: print "Generating mesh using", cmd
     p=pexpect.spawn(cmd,timeout=None)
     p.expect("Opening %s."%(filename))
     assert p.before==""
