@@ -791,7 +791,7 @@ class mesh:
         self.removecentralnodes(faces)
         if b!=None and associateelements:
             b.associateelements(self.elements)
-    def writexda(self,filename,b=None):
+    def writexda(self,filename,verbose=True,b=None):
         """Writes mesh to filename (*.xda).
 
         We try to be byte to byte compatible with the xda output from libmesh
@@ -799,7 +799,7 @@ class mesh:
 
         """
         up=progressbar.MyBar("Writing mesh to %s:"%filename)
-        up.init(len(self.nodes)+2*len(self.elements))
+        if verbose: up.init(len(self.nodes)+2*len(self.elements))
         mapping=[]
         blocks={}
         sew=0
@@ -830,7 +830,7 @@ class mesh:
             mapping.append((elt,len(blocks[elt])))
             sew+=len(p)
             c+=1
-            up.update(c)
+            if verbose: up.update(c)
         nels=[len(blocks[t]) for t in blocks.keys()]
         map2=[]
         for x in mapping:
@@ -868,19 +868,19 @@ class mesh:
             for el in block:
                 f.write(("%d "*len(el))%tuple(el)+"\n")
                 c+=1
-                up.update(c)
+                if verbose: up.update(c)
         for node in self.nodes:
                 f.write("%e     %e  %e  \n"%tuple(node[1:]))
                 c+=1
-                up.update(c)
+                if verbose: up.update(c)
         for line in bs:
             f.write(("%d "*len(line))%tuple(line)+"\n")
-    def writemsh(self,filename):
+    def writemsh(self,filename,verbose=True):
         """Writes mesh to filename (*.msh).
 
         """
         up=progressbar.MyBar("Writing mesh to %s:"%filename)
-        up.init(len(self.nodes)+len(self.elements))
+        if verbose: up.init(len(self.nodes)+len(self.elements))
         f=file(filename,"w")
         l=f.write("$NOD\n")
         l=f.write("%d\n"%len(self.nodes))
@@ -889,7 +889,7 @@ class mesh:
                 f.write("%d %f %f %d\n"%node)
             else:
                 f.write("%d %f %f %f\n"%node)
-            up.update(node[0])
+            if verbose: up.update(node[0])
         l=f.write("$ENDNOD\n")
         l=f.write("$ELM\n")
         l=f.write("%d\n"%len(self.elements))
@@ -940,7 +940,7 @@ class mesh:
             n.extend(el[2:2+number_of_nodes])
             f.write("%d "*len(n)%tuple(n))
             f.write("\n")
-            up.update(len(self.nodes)+el[0])
+            if verbose: up.update(len(self.nodes)+el[0])
         l=f.write("$ENDELM\n")
         f.close()
     def writemsh2(self,filename):
@@ -2132,7 +2132,7 @@ class mesh:
     def writeregions(self,filename):
         f=open(filename,"w")
         f.write(str(self.regions))
-    def writeBC(self,filename):
+    def writeBC(self,filename,verbose=True):
         """self.faces contain triplets (p1,p2,p3) which are triangles of
         tetrahedrons on the boundary. We need to find the number of each
         corresponding tetrahedron and it's side."""
@@ -2213,7 +2213,7 @@ class mesh:
             return bc
 
         up=progressbar.MyBar("Writing BC to %s:"%filename)
-        up.init(2*len(self.faces))
+        if verbose: up.init(2*len(self.faces))
         nemap=buildmapping(self.elements)
         bc={}
         c=0
@@ -2221,14 +2221,14 @@ class mesh:
             #bc[key]=findelements(self.faces[key],self.elements)
             bc[key]=findelements2(self.faces[key],self.elements,nemap)
             c+=1
-            up.update(c)
+            if verbose: up.update(c)
         f=open(filename,"w")
         #f.write(repr(bc))
         f.write("%d\n"%len(bc))
         for k in bc:
             f.write("%d %d %s\n"%(k,len(bc[k]),numlist2str(flat(bc[k]))))
             c+=1
-            up.update(c)
+            if verbose: up.update(c)
 #        print bc[2]
 #        for i in range(len(bc[2])):
 #            print bc[2][i], self.elements[bc[2][i][0]-1] 
