@@ -64,11 +64,15 @@ def read_gmsh(filename):
             Keyword("Physical Volume")+lpar+inum+rpar+eq+
             Group(lbrace+inum+ZeroOrMore(colon+inum)+rbrace)+semi
             )
+    skip1 = Group(
+            Word(alphanums)+eq+fnum+semi
+            )
 
     comment = Group( Literal("//")+restOfLine).suppress()
 
     command = point | line | lineloop | circle | planesurface | ruledsurface | \
-            surfaceloop | volume | physicalsurface | physicalvolume | comment
+            surfaceloop | volume | physicalsurface | physicalvolume | comment \
+            | skip1
 
     grammar= OneOrMore(command)+StringEnd()
 

@@ -176,7 +176,8 @@ def read_tetgen(fname,verbose=True):
     m.faces=getBCfaces(fname+".face",progressbar.MyBar("        BC:"))
     return m
 
-def runtetgen(tetgenpath,filename,a=None,Q=None,quadratic=False,verbose=True):
+def runtetgen(tetgenpath,filename,a=None,Q=None,quadratic=False,verbose=True,
+        refine=False):
     """Runs tetgen.
     
     tetgenpath ... the tetgen executable with a full path
@@ -186,17 +187,28 @@ def runtetgen(tetgenpath,filename,a=None,Q=None,quadratic=False,verbose=True):
     quadratic ... False - generate linear elements, True - quadratic elements
     """
     import pexpect
-    cmd = "%s -pQAq" % (tetgenpath)
+    if not refine:
+        cmd = "%s -pQAq" % (tetgenpath)
+    else:
+        cmd = "%s -rQAq" % (tetgenpath)
     if Q!=None:
         cmd=cmd+"%f"%Q
-    if a!=None:
+    if a!=None and not refine:
         cmd=cmd+" -a%f"%(a)
+    if refine:
+        cmd=cmd+" -a"
     if quadratic:
         cmd=cmd+" -o2"
     cmd=cmd+" %s"%(filename)
     if verbose: print "Generating mesh using", cmd
     p=pexpect.spawn(cmd,timeout=None)
-    p.expect("Opening %s."%(filename))
+    if not refine:
+        p.expect("Opening %s."%(filename))
+    else:
+        p.expect("Opening %s.node.\r\n"%(filename))
+        p.expect("Opening %s.ele.\r\n"%(filename))
+        p.expect("Opening %s.face.\r\n"%(filename))
+        p.expect("Opening %s.vol."%(filename))
     assert p.before==""
     p.expect(pexpect.EOF)
     if p.before!="\r\n":
